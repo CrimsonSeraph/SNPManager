@@ -1,7 +1,6 @@
 #include "../include/FileManager.h"
 
 FileManager::FileManager() {
-	serch_file();
 }
 
 FileManager::~FileManager() {
@@ -10,20 +9,38 @@ FileManager::~FileManager() {
 
 void FileManager::change_to_status(FileManagerStatus to_status) {
 	switch (to_status) {
-	case FileManagerStatus::kChooseFile:
-		while (!open_file(file_path + file_list[choose_file() - 1].name)) {
+	case FileManagerStatus::kFChooseFile:
+		if (file_list.size() == 0) {
+			break;
 		}
-		change_to_status(kNone);
+		while (!open_file(file_list[choose_file()].name)) {
+		}
+		change_to_status(kFNone);
 		break;
-	case FileManagerStatus::kSaveFile:
+	case FileManagerStatus::kFSaveFile:
 		while (!save_file()) {
 		};
-		change_to_status(kNone);
+		change_to_status(kFNone);
+		break;
+	case FileManagerStatus::kFStartLoad:
+		// 尝试加载，失败则继续尝试一次
+		if (!start_load()) {
+			start_load();
+		}
+		change_to_status(kFNone);
 		break;
 	default:
-	case FileManagerStatus::kNone:
+	case FileManagerStatus::kFNone:
 		break;
 	}
+}
+
+bool FileManager::start_load() {
+	create_temp_file();
+	if (!serch_file()) {
+		return false;
+	}
+	return true;
 }
 
 bool FileManager::serch_file() {
@@ -35,9 +52,12 @@ bool FileManager::serch_file() {
 	}
 	// 获取文件列表
 	file_list.clear();
+	if (is_file_exist(file_path + file_name)) {
+		file_list.push_back({ 0, file_name });
+	}
 	for (const auto& o_file_name : std::filesystem::directory_iterator(file_path)) {
 		// 正则匹配文件名
-		if (std::regex_match(o_file_name.path().filename().string(), file_name_regex)) {
+		if (std::regex_match(o_file_name.path().filename().string(), AllRegex::get_file_name_regex())) {
 			std::string file_name = o_file_name.path().filename().string();
 			size_t start = file_name.find("_") + 1;
 			size_t end = file_name.find(".");
@@ -53,7 +73,6 @@ bool FileManager::serch_file() {
 		}
 	}
 	if (file_list.size() == 0) {
-		creat_temp_file();
 		return false;
 	}
 	else if (file_list.size() == 1) {
@@ -69,7 +88,7 @@ bool FileManager::serch_file() {
 	}
 	// 删除多余的备份文件
 	if (file_list.size() > max_file_backup) {
-		for (int i = file_list.size() - 1; i >= max_file_backup; --i) {
+		for (int i = static_cast<int>(file_list.size()) - 1; i >= max_file_backup; --i) {
 			delete_file(file_list[i].name);
 			file_list.pop_back();
 		}
@@ -87,13 +106,19 @@ bool FileManager::is_file_exist(std::string file) {
 }
 
 bool FileManager::open_file(const std::string name) {
+	if (name == file_name) {
+		return true;
+	}
 	// 目标文件是否存在，不存在则返回false
 	if (!is_file_exist(file_path + name)) {
 		return false;
 	}
-	// 临时文件是否存在，存在则返回false
-	if (is_file_exist(file_path + name)) {
-		return false;
+	// 临时文件是否存在，存在则删除，删除失败返回false
+	if (is_file_exist(file_path + file_name)) {
+		delete_file(file_path + file_name);
+		if (is_file_exist(file_path + file_name)) {
+			return false;
+		}
 	}
 	// 复制目标文件为临时文件，失败返回false
 	if (!std::filesystem::copy_file(file_path + name, file_path + file_name)) {
@@ -110,17 +135,26 @@ bool FileManager::delete_file(const std::string& name) {
 	return false;
 }
 
-bool FileManager::creat_temp_file() {
+bool FileManager::create_temp_file() {
+	// 临时文件是否存在，存在则返回true
 	if (is_file_exist(file_path + file_name)) {
 		return true;
 	}
 	std::ofstream o_file;
+	// 创建临时文件
 	o_file.open(file_path + file_name);
-	if (o_file.is_open()) {
-		o_file.close();
-		return true;
+	if (!o_file.is_open()) {
+		// 检查目录是否存在，若不存在则创建
+		if (!(std::filesystem::exists(file_path) && std::filesystem::is_directory(file_path))) {
+			if (!std::filesystem::create_directory(file_path)) {
+				return false;
+			}
+		}
+		// 再次尝试创建临时文件
+		o_file.open(file_path + file_name);
 	}
-	return false;
+	o_file.close();
+	return is_file_exist(file_path + file_name);
 }
 
 bool FileManager::save_file() {
@@ -140,6 +174,15 @@ bool FileManager::save_file() {
 }
 
 int FileManager::choose_file() {
+	// 若列表仅有临时文件，返回序号 0
+	if (file_list.size() == 1) {
+		if (is_file_exist(file_path + file_name)) {
+			return 0;
+		}
+		// 若临时文件不存在，则创建
+		create_temp_file();
+		file_list.push_back({ 0, file_name });
+	}
 	show_file_list();
 	int input;
 	while (true) {
@@ -169,7 +212,13 @@ void FileManager::show_file_list() {
 
 void FileManager::reflash_file_name() {
 	for (auto file_info : file_list) {
-		std::string current_file_name = "Student_" + file_info.index;
+		std::string current_file_name;
+		if (file_info.index == 0) {
+			current_file_name = "Student_temp";
+		}
+		else {
+			current_file_name = "Student_" + std::to_string(file_info.index);
+		}
 		std::filesystem::rename(file_path + file_info.name, file_path + current_file_name);
 	}
 }
@@ -202,18 +251,19 @@ Student FileManager::get_student_data() {
 	}
 	std::string line;
 	std::smatch match;
+	return student_data;// 暂时返回默认数据
 	while (std::getline(i_file, line)) {
-		if (std::regex_search(line, match, id_regex)) {
+		if (std::regex_search(line, match, AllRegex::get_id_regex())) {
 			all_student.push_back(student_data);
 			student_data.id = match.str(0);
-			std::regex_search(line, match, name_regex);
+			std::regex_search(line, match, AllRegex::get_name_regex());
 			student_data.name = match.str(0);
-			std::regex_search(line, match, gender_regex);
+			std::regex_search(line, match, AllRegex::get_gender_regex());
 			student_data.gender = (match.str(0) == "男") ? true : false;
-			std::regex_search(line, match, age_regex);
+			std::regex_search(line, match, AllRegex::get_age_regex());
 			student_data.age = std::stoi(match.str(0));
 			// --后续添加读取籍贯部分--
-			std::regex_search(line, match, phone_number_regex);
+			std::regex_search(line, match, AllRegex::get_phone_number_regex());
 			student_data.phone_number = match.str(0);
 		}
 	}

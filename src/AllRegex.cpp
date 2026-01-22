@@ -7,8 +7,11 @@ const std::regex& AllRegex::get_id_regex() {
 }
 
 const std::regex& AllRegex::get_name_regex() {
-	// 姓名正则表达式：2-5个中文字符，支持复姓（仅支持基本汉字，含约 20,902 个汉字字符）
-	static std::regex name_regex = std::regex(R"([\u4e00-\u9fa5]{2,5})");
+	// 姓名正则表达式：2-5个中文字符
+	// commented by ChatGPT-5 mini:
+	// 注意：std::regex 默认使用 char 类型，不能直接用 \u4e00-\u9fa5，需要用 UTF-8 字节范围匹配
+	// 匹配2-5个中文字符（UTF-8编码下的汉字字节范围：[\xE4-\xE9][\x80-\xBF][\x80-\xBF]）
+	static std::regex name_regex = std::regex(R"(([\xE4-\xE9][\x80-\xBF]{2}){2,5})");
 	return name_regex;
 }
 
@@ -26,6 +29,7 @@ const std::regex& AllRegex::get_age_regex() {
 
 const std::regex& AllRegex::get_native_place_regex() {
 	// --后续添加籍贯正则部分--
+	return get_gender_regex();// 暂时返回性别正则表达式
 }
 
 const std::regex& AllRegex::get_phone_number_regex() {
