@@ -178,3 +178,24 @@ std::string FileManager::get_current_file_name() {
 	std::string current_file_name = "Student_" + current_file_index;
 	return current_file_name;
 }
+
+Student FileManager::get_student_data() {
+	Student student_data = {
+		.id = "0000000000",
+		.name = "错误",
+		.gender = true,
+		.age = 16,
+		.native_place = {
+			.province = "错误省份",
+			.city = "错误城市",
+			.district = "错误区县",
+		},
+		.phone_number = "00000000000",
+	};
+	if (!is_file_exist(file_path + file_name)) {
+		return student_data;
+	}
+	std::ofstream o_file;
+	o_file.open(file_path + file_name);
+	return student_data;
+}
