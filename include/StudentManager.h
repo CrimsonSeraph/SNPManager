@@ -39,6 +39,8 @@ private:
 	std::regex id_regex = AllRegex::get_id_regex();
 	// 姓名正则表达式：2-5个中文字符，支持复姓（仅支持基本汉字，含约 20,902 个汉字字符）
 	std::regex name_regex = AllRegex::get_name_regex();
+	// 年龄正则表达式：16-30岁整数
+	std::regex age_regex = AllRegex::get_age_regex();
 	// 联系方式正则表达式：11位手机号
 	std::regex phone_number_regex = AllRegex::get_phone_number_regex();
 

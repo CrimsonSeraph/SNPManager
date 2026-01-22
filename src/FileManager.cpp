@@ -79,34 +79,6 @@ bool FileManager::serch_file() {
 	return true;
 }
 
-void FileManager::show_file_list() {
-	int current_number = 0;
-	for (auto file_info : file_list) {
-		std::cout << "序号" + file_info.index << "\t";
-		std::cout << "名称" + file_info.name << "\t";
-		current_number++;
-		if (current_number >= max_show_number) {
-			std::cout << "\n";
-			current_number = 0;
-		}
-	}
-}
-
-int FileManager::choose_file() {
-	show_file_list();
-	int input;
-	while (true) {
-		std::cout << "输入打开文件序号：";
-		std::cin >> input;
-		if (input > 0 && input < file_list.size()) {
-			std::cout << CLEAR_LINE;
-			break;
-		}
-		std::cout << "输入错误！重新输入!";
-	}
-	return input;
-}
-
 bool FileManager::is_file_exist(std::string file) {
 	if (!std::filesystem::exists(file)) {
 		return false;
@@ -167,6 +139,34 @@ bool FileManager::save_file() {
 	return true;
 }
 
+int FileManager::choose_file() {
+	show_file_list();
+	int input;
+	while (true) {
+		std::cout << "输入打开文件序号：";
+		std::cin >> input;
+		if (input > 0 && input < file_list.size()) {
+			std::cout << CLEAR_LINE;
+			break;
+		}
+		std::cout << "输入错误！重新输入!";
+	}
+	return input;
+}
+
+void FileManager::show_file_list() {
+	int current_number = 0;
+	for (auto file_info : file_list) {
+		std::cout << "序号" + file_info.index << "\t";
+		std::cout << "名称" + file_info.name << "\t";
+		current_number++;
+		if (current_number >= max_show_number) {
+			std::cout << "\n";
+			current_number = 0;
+		}
+	}
+}
+
 void FileManager::reflash_file_name() {
 	for (auto file_info : file_list) {
 		std::string current_file_name = "Student_" + file_info.index;
@@ -195,7 +195,26 @@ Student FileManager::get_student_data() {
 	if (!is_file_exist(file_path + file_name)) {
 		return student_data;
 	}
-	std::ofstream o_file;
-	o_file.open(file_path + file_name);
-	return student_data;
+	std::ifstream i_file;
+	i_file.open(file_path + file_name);
+	if (!i_file.is_open()) {
+		return student_data;
+	}
+	std::string line;
+	std::smatch match;
+	while (std::getline(i_file, line)) {
+		if (std::regex_search(line, match, id_regex)) {
+			all_student.push_back(student_data);
+			student_data.id = match.str(0);
+			std::regex_search(line, match, name_regex);
+			student_data.name = match.str(0);
+			std::regex_search(line, match, gender_regex);
+			student_data.gender = (match.str(0) == "男") ? true : false;
+			std::regex_search(line, match, age_regex);
+			student_data.age = std::stoi(match.str(0));
+			// --后续添加读取籍贯部分--
+			std::regex_search(line, match, phone_number_regex);
+			student_data.phone_number = match.str(0);
+		}
+	}
 }

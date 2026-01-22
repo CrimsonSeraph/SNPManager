@@ -12,6 +12,22 @@ const std::regex& AllRegex::get_name_regex() {
 	return name_regex;
 }
 
+const std::regex& AllRegex::get_gender_regex() {
+	// 性别正则表达式：女 | 男
+	static std::regex gender_regex = std::regex(R"((女|男))");
+	return gender_regex;
+}
+
+const std::regex& AllRegex::get_age_regex() {
+	// 年龄正则表达式：16-30岁整数
+	static std::regex age_regex = std::regex(R"((1[6-9]|2[0-9]|30))");
+	return age_regex;
+}
+
+const std::regex& AllRegex::get_native_place_regex() {
+	// --后续添加籍贯正则部分--
+}
+
 const std::regex& AllRegex::get_phone_number_regex() {
 	// 联系方式正则表达式：11位手机号
 	static std::regex phone_number_regex = std::regex(R"((1[3-9][0-9]{9}))");

@@ -25,6 +25,12 @@
     <ClInclude Include="include\StudentManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\AllStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AllRegex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FileManager.cpp">
@@ -34,6 +40,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StudentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AllRegex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
