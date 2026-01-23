@@ -27,11 +27,6 @@ const std::regex& AllRegex::get_age_regex() {
 	return age_regex;
 }
 
-const std::regex& AllRegex::get_native_place_regex() {
-	// --后续添加籍贯正则部分--
-	return get_gender_regex();// 暂时返回性别正则表达式
-}
-
 const std::regex& AllRegex::get_phone_number_regex() {
 	// 联系方式正则表达式：11位手机号
 	static std::regex phone_number_regex = std::regex(R"((1[3-9][0-9]{9}))");
