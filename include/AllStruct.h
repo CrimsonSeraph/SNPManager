@@ -1,5 +1,18 @@
 #pragma once
 #include <iostream>
+#include <vector>
+
+// 市级体
+struct City {
+	std::string name;															// 市名称
+	std::vector<std::string> districts;											// 区/县名称列表
+};
+
+// 省级体
+struct Province {
+	std::string name;															// 省名称
+	std::vector<City> cities;													// 市列表
+};
 
 // 籍贯体
 struct NativePlace {

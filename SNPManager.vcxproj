@@ -128,12 +128,14 @@
   <ItemGroup>
     <ClInclude Include="include\AllRegex.h" />
     <ClInclude Include="include\AllStruct.h" />
+    <ClInclude Include="include\AreaData.h" />
     <ClInclude Include="include\FileManager.h" />
     <ClInclude Include="include\StudentManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\AllRegex.cpp" />
+    <ClCompile Include="src\AreaData.cpp" />
     <ClCompile Include="src\FileManager.cpp" />
     <ClCompile Include="src\StudentManager.cpp" />
   </ItemGroup>
