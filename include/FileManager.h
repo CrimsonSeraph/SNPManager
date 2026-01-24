@@ -1,51 +1,56 @@
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”æ³¨é‡Šæ ‡å‡†ï¼š27ä¸ªåˆ¶è¡¨ç¬¦å®½åº¦
 #pragma once
 #include "../include/AllStruct.h"
 #include "../include/AllRegex.h"
+#include "../include/AreaData.h"
 #include <iostream>
-#include <fstream>																// ÎÄ¼ş¶ÁĞ´
-#include <filesystem>															// ÎÄ¼şÏµÍ³²Ù×÷
+#include <fstream>
+#include <filesystem>
 #include <string>
-#include <regex>																// ÕıÔòÆ¥Åä
+#include <regex>
 #include <vector>
 
-#define CLEAR_LINE "\r\033[K"													// »Ø³µµ½ĞĞÊ×£¬È»ºóÇå³ıµ½ĞĞÎ²
+#define CLEAR_LINE "\x1b[2K\r"																				// æ¸…é™¤å½“å‰æ•´è¡Œå¹¶å›åˆ°è¡Œé¦–
+#define MOVE_CURSOR_UP "\x1b[1A"																			// ä¸Šç§»ä¸€è¡Œï¼ˆå…‰æ ‡ä½ç½®ç›¸å¯¹ä¸å˜ï¼‰
+#define CLEAR_PREV_LINE MOVE_CURSOR_UP CLEAR_LINE															// ä¸Šç§»ä¸€è¡Œå¹¶æ¸…é™¤è¯¥è¡Œ
+#define CLEAR_CUR_AND_PREV_LINE CLEAR_LINE MOVE_CURSOR_UP CLEAR_LINE										// æ¸…é™¤å½“å‰è¡Œå¹¶ä¸Šç§»æ¸…é™¤ä¸Šä¸€è¡Œ
 
-// ÎÄ¼ş¹ÜÀí×´Ì¬»ú
+// æ–‡ä»¶ç®¡ç†çŠ¶æ€æœº
 enum FileManagerStatus {
-	kFChooseFile,																// Ñ¡ÔñÄ¿±êÎÄ¼ş
-	kFSaveFile,																	// ±£´æÎÄ¼ş
-	kFGetStudentData,															// »ñÈ¡Ñ§ÉúÊı¾İ
-	kFStartLoad,																// ¿ªÊ¼¼ÓÔØ
-	kFNone,																		// ÎŞ²Ù×÷
+	kFChooseFile,																							// é€‰æ‹©ç›®æ ‡æ–‡ä»¶
+	kFSaveFile,																								// ä¿å­˜æ–‡ä»¶
+	kFGetStudentData,																						// è·å–å­¦ç”Ÿæ•°æ®
+	kFStartLoad,																							// å¼€å§‹åŠ è½½
+	kFNone,																									// æ— æ“ä½œ
 };
 
-// ÎÄ¼ş¹ÜÀíÀà
+// æ–‡ä»¶ç®¡ç†ç±»
 class FileManager {
 public:
 	FileManager();
 	~FileManager();
 
-	void change_to_status(FileManagerStatus to_status);							// ×Ô¶¨ÒåµÄ×´Ì¬×ªÒÆ
+	void change_to_status(FileManagerStatus to_status);														// è‡ªå®šä¹‰çŠ¶æ€è½¬ç§»
 
 private:
-	bool start_load();															// ¿ªÊ¼¼ÓÔØ£¬·µ»ØÊÇ·ñ³É¹¦
-	bool serch_file();															// ËÑË÷µ±Ç°Â·¾¶ÏÂµÄÄ¿±êÎÄ¼ş£¬·µ»ØÊÇ·ñ³É¹¦
-	bool is_file_exist(std::string file);										// ¼ì²éµ±Ç°Ä¿±êÎÄ¼şÊÇ·ñ´æÔÚ
-	bool open_file(const std::string name);										// ´ò¿ªÄ¿±êÎÄ¼ş£¬·µ»ØÊÇ·ñ³É¹¦
-	bool delete_file(const std::string& name);									// É¾³ıÖ¸¶¨µÄÎÄ¼ş£¬·µ»ØÊÇ·ñ³É¹¦
-	bool create_temp_file();													// ´´½¨ÁÙÊ±ÎÄ¼ş£¬·µ»ØÊÇ·ñ³É¹¦
-	bool save_file();															// ±£´æÁÙÊ±ÎÄ¼ş£¬·µ»ØÊÇ·ñ³É¹¦
-	int choose_file();															// Ñ¡ÔñÄ¿±êÎÄ¼ş, ·µ»ØÎÄ¼şĞòºÅ
-	void show_file_list();														// ÏÔÊ¾ËÑË÷µ½µÄÄ¿±êÎÄ¼şÁĞ±í
-	void reflash_file_name();													// ¸ù¾İÎÄ¼şÁĞ±íĞòºÅË¢ĞÂÎÄ¼şÃû³Æ
-	std::string get_current_file_name();										// »ñÈ¡µ±Ç°²Ù×÷µÄÎÄ¼şÃû
-	Student get_student_data();													// ´ÓÁÙÊ±ÎÄ¼şÖĞ»ñÈ¡Ñ§ÉúÊı¾İ
+	bool start_load();																						// å¼€å§‹åŠ è½½ï¼Œè¿”å›æ˜¯å¦æˆåŠŸ
+	bool serch_file();																						// æœç´¢å½“å‰è·¯å¾„ä¸‹çš„ç›®æ ‡æ–‡ä»¶ï¼Œè¿”å›æ˜¯å¦æˆåŠŸ
+	bool is_file_exist(const std::string& name);															// æ£€æŸ¥æŒ‡å®šæ–‡ä»¶æ˜¯å¦å­˜åœ¨
+	bool open_file(const std::string& name);																// æ‰“å¼€æŒ‡å®šæ–‡ä»¶ï¼Œè¿”å›æ˜¯å¦æˆåŠŸ
+	bool delete_file(const std::string& name);																// åˆ é™¤æŒ‡å®šæ–‡ä»¶ï¼Œè¿”å›æ˜¯å¦æˆåŠŸ
+	bool create_temp_file();																				// åˆ›å»ºä¸´æ—¶æ–‡ä»¶ï¼Œè¿”å›æ˜¯å¦æˆåŠŸ
+	bool save_file();																						// ä¿å­˜ä¸´æ—¶æ–‡ä»¶ï¼Œè¿”å›æ˜¯å¦æˆåŠŸ
+	int choose_file();																						// é€‰æ‹©ç›®æ ‡æ–‡ä»¶ï¼Œè¿”å›é€‰æ‹©çš„æ–‡ä»¶åºå·
+	void show_file_list();																					// æ˜¾ç¤ºæ–‡ä»¶åˆ—è¡¨
+	void reflash_file_name();																				// æ ¹æ®æ–‡ä»¶åˆ—è¡¨åºå·åˆ·æ–°æ–‡ä»¶å
+	std::string get_current_file_name();																	// è·å–å½“å‰æ“ä½œçš„æ–‡ä»¶å
+	std::vector<Student> get_student_data();																// ä»ä¸´æ—¶æ–‡ä»¶ä¸­è·å–å­¦ç”Ÿæ•°æ®
 
-	std::vector<FileInfo> file_list;											// ´æ·ÅËÑË÷µ½µÄÄ¿±êÎÄ¼şĞòºÅºÍÃû³Æ
-	std::vector<Student> all_student;											// ´æ·Å´ÓÎÄ¼şÖĞ»ñÈ¡µÄÒ»ĞĞStudent
-	std::string file_path = "../resrc/";										// µ±Ç°²Ù×÷µÄÎÄ¼şÂ·¾¶
-	std::string file_name = "Students_temp.txt";								// ÁÙÊ±ÎÄ¼şÃû
-	int max_file_backup = 5;													// ×î´ó±¸·İÎÄ¼şÊıÁ¿
-	int current_file_index = 1;													// ÁÙÊ±ÎÄ¼şĞòºÅ£¬Ä¬ÈÏ´Ó1¿ªÊ¼
-	int max_show_number = 3;													// Ã¿ĞĞÏÔÊ¾µÄÎÄ¼şÊıÁ¿
+	std::vector<FileInfo> file_list;																		// å­˜æ”¾æœç´¢åˆ°çš„ç›®æ ‡æ–‡ä»¶åºå·å’Œåç§°
+	std::vector<Student> all_student;																		// å­˜æ”¾ä»æ–‡ä»¶ä¸­è·å–çš„ä¸€è¡ŒStudent
+	std::string file_path = "../resrc";																		// å½“å‰æ“ä½œçš„æ–‡ä»¶è·¯å¾„
+	std::string file_name = "Studnet_temp.txt";																// ä¸´æ—¶æ–‡ä»¶å
+	int max_file_backup = 5;																				// æœ€å¤§å¤‡ä»½æ–‡ä»¶æ•°é‡
+	int current_file_index = 0;																				// ä¸´æ—¶æ–‡ä»¶åºå·ï¼Œé»˜è®¤ä»0å¼€å§‹
+	int max_show_number = 3;																				// æ¯è¡Œæ˜¾ç¤ºçš„æ–‡ä»¶æ•°é‡
 };

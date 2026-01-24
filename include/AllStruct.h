@@ -1,38 +1,39 @@
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”æ³¨é‡Šæ ‡å‡†ï¼š27ä¸ªåˆ¶è¡¨ç¬¦å®½åº¦
 #pragma once
 #include <iostream>
 #include <vector>
 
-// ÊĞ¼¶Ìå
+// å¸‚çº§ä½“
 struct City {
-	std::string name;															// ÊĞÃû³Æ
-	std::vector<std::string> districts;											// Çø/ÏØÃû³ÆÁĞ±í
+	std::string name;																						// å¸‚åç§°
+	std::vector<std::string> districts;																		// åŒº/å¿åç§°åˆ—è¡¨
 };
 
-// Ê¡¼¶Ìå
+// çœçº§ä½“
 struct Province {
-	std::string name;															// Ê¡Ãû³Æ
-	std::vector<City> cities;													// ÊĞÁĞ±í
+	std::string name;																						// çœåç§°
+	std::vector<City> cities;																				// å¸‚åˆ—è¡¨
 };
 
-// ¼®¹áÌå
+// ç±è´¯ä½“
 struct NativePlace {
-	std::string province;														// Ê¡
-	std::string city;															// ÊĞ
-	std::string district;														// Çø/ÏØ
+	std::string province;																					// çœ
+	std::string city;																						// å¸‚
+	std::string district;																					// åŒº/å¿
 };
 
-// Ñ§ÉúÌå
+// å­¦ç”Ÿä½“
 struct Student {
-	std::string id;																// Ñ§ºÅ£º10Î»Êı×Ö£¬Î¨Ò»±êÊ¶£¬²»ÄÜÖØ¸´
-	std::string name;															// ĞÕÃû£º2-5¸öÖĞÎÄ×Ö·û£¬Ö§³Ö¸´ĞÕ
-	bool gender;																// ĞÔ±ğ£ºtrue/false£¬ÄĞ/Å®£¬µ¥Ñ¡ÊäÈë
-	int age;																	// ÄêÁä£º16-30ËêÕûÊı£¬Ğè·ûºÏ´óÑ§ÉúÄêÁä·¶Î§
-	NativePlace native_place;													// ¼®¹á£ºÊ¡¡¢ÊĞ¡¢ÏØÈı¼¶
-	std::string phone_number;													// ÁªÏµ·½Ê½£º11Î»ÊÖ»úºÅ
+	std::string id;																							// å­¦å·ï¼š10ä½æ•°å­—ï¼Œå”¯ä¸€æ ‡è¯†ï¼Œä¸èƒ½é‡å¤
+	std::string name;																						// å§“åï¼š2-5ä¸ªä¸­æ–‡å­—ç¬¦ï¼Œæ”¯æŒå¤å§“
+	bool gender;																							// æ€§åˆ«ï¼štrue/falseï¼Œç”·/å¥³ï¼Œå•é€‰è¾“å…¥
+	int age;																								// å¹´é¾„ï¼š16-30å²æ•´æ•°ï¼Œéœ€è¦ç¬¦åˆå¤§å­¦ç”Ÿå¹´é¾„èŒƒå›´
+	NativePlace native_place;																				// ç±è´¯ï¼šçœã€å¸‚ã€å¿ä¸‰çº§
+	std::string phone_number;																				// è”ç³»æ–¹å¼ï¼š11ä½æ‰‹æœºå·
 };
 
-// ÎÄ¼şĞÅÏ¢Ìå
+// æ–‡ä»¶ä¿¡æ¯ä½“
 struct FileInfo {
-	int index;																	// ÎÄ¼şĞòºÅ
-	std::string name;															// ÎÄ¼şÃû³Æ
+	int index;																								// æ–‡ä»¶åºå·
+	std::string name;																						// æ–‡ä»¶åç§°
 };

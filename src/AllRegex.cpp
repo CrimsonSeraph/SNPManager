@@ -1,40 +1,46 @@
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”æ³¨é‡Šæ ‡å‡†ï¼š27ä¸ªåˆ¶è¡¨ç¬¦å®½åº¦
 #include "AllRegex.h"
 
 const std::regex& AllRegex::get_id_regex() {
-	// Ñ§ºÅÕıÔò±í´ïÊ½£º10Î»Êı×Ö
+	// å­¦å·æ­£åˆ™è¡¨è¾¾å¼ï¼š10ä½æ•°å­—
 	static std::regex id_regex = std::regex(R"([0-9]{10})");
 	return id_regex;
 }
 
 const std::regex& AllRegex::get_name_regex() {
-	// ĞÕÃûÕıÔò±í´ïÊ½£º2-5¸öÖĞÎÄ×Ö·û
-	// commented by ChatGPT-5 mini:
-	// ×¢Òâ£ºstd::regex Ä¬ÈÏÊ¹ÓÃ char ÀàĞÍ£¬²»ÄÜÖ±½ÓÓÃ \u4e00-\u9fa5£¬ĞèÒªÓÃ UTF-8 ×Ö½Ú·¶Î§Æ¥Åä
-	// Æ¥Åä2-5¸öÖĞÎÄ×Ö·û£¨UTF-8±àÂëÏÂµÄºº×Ö×Ö½Ú·¶Î§£º[\xE4-\xE9][\x80-\xBF][\x80-\xBF]£©
-	static std::regex name_regex = std::regex(R"(([\xE4-\xE9][\x80-\xBF]{2}){2,5})");
+	// å§“åæ­£åˆ™è¡¨è¾¾å¼ï¼š2-5ä¸ªä¸­æ–‡å­—ç¬¦ï¼ˆUTF-8 ä¸‰å­—èŠ‚é€šç”¨åŒ¹é…ï¼‰
+	// comment by ChatGPT-5 mini:
+	// è¯´æ˜ï¼š
+	// - æ”¹ä¸ºåŒ¹é… UTF-8 ä¸‰å­—èŠ‚åºåˆ—çš„èµ·å§‹å­—èŠ‚èŒƒå›´ [\xE0-\xEF]ï¼Œé…åˆä¸¤ä¸ªç»­å­—èŠ‚ [\x80-\xBF]
+	// - æ•´ä½“åŒ¹é… 2 åˆ° 5 ä¸ªè¿™æ ·çš„ä¸‰å­—èŠ‚å­—ç¬¦
+	// æ³¨æ„ï¼š
+	// - ç¡®ä¿æºæ–‡ä»¶å’Œè¾“å…¥å­—ç¬¦ä¸²å‡ä¸º UTF-8 ç¼–ç ï¼Œå¦åˆ™åŒ¹é…ä¼šå¤±è´¥ã€‚
+	// - è‹¥éœ€è¦æ›´å®Œå–„çš„ Unicode æ”¯æŒï¼ˆä¾‹å¦‚è¦†ç›–å››å­—èŠ‚å­—ç¬¦æˆ–ä½¿ç”¨ Unicode å±æ€§ï¼‰ï¼Œ
+	//   å»ºè®®æ”¹ç”¨ std::wstring/std::wregexï¼ˆåœ¨åˆé€‚çš„ locale ä¸‹ï¼‰æˆ–ä½¿ç”¨ ICUã€‚
+	static std::regex name_regex = std::regex(R"((([\xE0-\xEF][\x80-\xBF][\x80-\xBF]){2,5}))");
 	return name_regex;
 }
 
 const std::regex& AllRegex::get_gender_regex() {
-	// ĞÔ±ğÕıÔò±í´ïÊ½£ºÅ® | ÄĞ
-	static std::regex gender_regex = std::regex(R"((Å®|ÄĞ))");
+	// æ€§åˆ«æ­£åˆ™è¡¨è¾¾å¼ï¼šå¥³ | ç”·
+	static std::regex gender_regex = std::regex(R"((å¥³|ç”·))");
 	return gender_regex;
 }
 
 const std::regex& AllRegex::get_age_regex() {
-	// ÄêÁäÕıÔò±í´ïÊ½£º16-30ËêÕûÊı
+	// å¹´é¾„æ­£åˆ™è¡¨è¾¾å¼ï¼š16-30å²æ•´æ•°
 	static std::regex age_regex = std::regex(R"((1[6-9]|2[0-9]|30))");
 	return age_regex;
 }
 
 const std::regex& AllRegex::get_phone_number_regex() {
-	// ÁªÏµ·½Ê½ÕıÔò±í´ïÊ½£º11Î»ÊÖ»úºÅ
-	static std::regex phone_number_regex = std::regex(R"((1[3-9][0-9]{9}))");
+	// è”ç³»æ–¹å¼æ­£åˆ™è¡¨è¾¾å¼ï¼š11ä½æ‰‹æœºå·
+	static std::regex phone_number_regex = std::regex(R"(([0-9]{11}))");
 	return phone_number_regex;
 }
 
 const std::regex& AllRegex::get_file_name_regex() {
-	// Ä¿±êÎÄ¼şÃûÕıÔò±í´ïÊ½(ÊµÀı£ºStudent_1.txt)
+	// ç›®æ ‡æ–‡ä»¶åæ­£åˆ™è¡¨è¾¾å¼(å®ä¾‹ï¼šstudents_1.txt)
 	static std::regex file_name_regex = std::regex(R"(students_[0-9]{1,}\.txt)");
 	return file_name_regex;
 }

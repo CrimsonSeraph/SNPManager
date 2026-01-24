@@ -1,3 +1,4 @@
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”æ³¨é‡Šæ ‡å‡†ï¼š27ä¸ªåˆ¶è¡¨ç¬¦å®½åº¦
 #pragma once
 #include <iostream>
 #include <string>
@@ -5,15 +6,15 @@
 
 class AllRegex {
 public:
-	AllRegex() = delete;														// ½ûÖ¹ÊµÀı»¯
-	~AllRegex() = delete;														// ½ûÖ¹Îö¹¹
-	AllRegex(const AllRegex&) = delete;											// ½ûÖ¹¿½±´¹¹Ôì
-	AllRegex& operator=(const AllRegex&) = delete;								// ½ûÖ¹¸³Öµ²Ù×÷
+	AllRegex() = delete;																					// ç¦æ­¢å®ä¾‹åŒ–
+	~AllRegex() = delete;																					// ç¦æ­¢ææ„
+	AllRegex(const AllRegex&) = delete;																		// ç¦æ­¢æ‹·è´
+	AllRegex& operator=(const AllRegex&) = delete;															// ç¦æ­¢èµ‹å€¼æ„é€ 
 
-	static const std::regex& get_id_regex();									// »ñÈ¡Ñ§ºÅÕıÔò±í´ïÊ½
-	static const std::regex& get_name_regex();									// »ñÈ¡ĞÕÃûÕıÔò±í´ïÊ½
-	static const std::regex& get_gender_regex();								// »ñÈ¡ĞÔ±ğÕıÔò±í´ïÊ½
-	static const std::regex& get_age_regex();									// »ñÈ¡ÄêÁäÕıÔò±í´ïÊ½
-	static const std::regex& get_phone_number_regex();							// »ñÈ¡µç»°ÕıÔò±í´ïÊ½
-	static const std::regex& get_file_name_regex();								// »ñÈ¡ÎÄ¼şÃûÕıÔò±í´ïÊ½
+	static const std::regex& get_id_regex();																// è·å–IDçš„æ­£åˆ™è¡¨è¾¾å¼
+	static const std::regex& get_name_regex();																// è·å–å§“åçš„æ­£åˆ™è¡¨è¾¾å¼
+	static const std::regex& get_gender_regex();															// è·å–æ€§åˆ«çš„æ­£åˆ™è¡¨è¾¾å¼
+	static const std::regex& get_age_regex();																// è·å–å¹´é¾„çš„æ­£åˆ™è¡¨è¾¾å¼
+	static const std::regex& get_phone_number_regex();														// è·å–ç”µè¯å·ç çš„æ­£åˆ™è¡¨è¾¾å¼
+	static const std::regex& get_file_name_regex();															// è·å–æ–‡ä»¶åçš„æ­£åˆ™è¡¨è¾¾å¼
 };

@@ -1,45 +1,64 @@
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” æ³¨é‡Šæ ‡å‡†ï¼š27ä¸ªåˆ¶è¡¨ç¬¦å®½åº¦
 #pragma once
 #include "../include/FileManager.h"
 #include "../include/AllStruct.h"
 #include "../include/AllRegex.h"
+#include "../include/AreaData.h"
 #include <iostream>
 #include <string>
-#include <regex>																// ÕıÔòÆ¥Åä
+#include <regex>
 #include <vector>
+#include <iomanip>
 
-// Ñ§Éú¹ÜÀí×´Ì¬»ú
+// å­¦ç”Ÿç®¡ç†çŠ¶æ€æœº
 enum StudentManagerStatus {
-	kSAddId,																		// Ìí¼ÓÑ§ºÅ
-	kSAddName,																	// Ìí¼ÓĞÕÃû
-	kSAddGender,																	// Ìí¼ÓĞÔ±ğ
-	kSAddAge,																	// Ìí¼ÓÄêÁä
-	kSAddNativePlace,															// Ìí¼Ó¼®¹á
-	kSAddPhoneNumber,															// Ìí¼ÓÁªÏµ·½Ê½
-	kSStartLoad,																// ¿ªÊ¼¼ÓÔØ
-	kSNone,																		// ÎŞ²Ù×÷
+	kSAddId,																								// æ·»åŠ å­¦å·
+	kSAddName,																								// æ·»åŠ å§“å
+	kSAddGender,																							// æ·»åŠ æ€§åˆ«
+	kSAddAge,																								// æ·»åŠ å¹´é¾„
+	kSAddPrince,																							// æ·»åŠ çœä»½
+	kSAddCity,																								// æ·»åŠ åŸå¸‚
+	kSAddDistrict,																							// æ·»åŠ åŒº/å¿
+	kSAddPhoneNumber,																						// æ·»åŠ è”ç³»æ–¹å¼
+	kSStartLoad,																							// å¼€å§‹åŠ è½½
+	kSNone,																									// æ— æ“ä½œ
 };
 
-// Ñ§Éú¹ÜÀíÀà
+// å­¦ç”Ÿç®¡ç†ç±»
 class StudentManager {
 public:
 	StudentManager();
 	~StudentManager();
 
-	void change_status();														// Ä¬ÈÏµÄ×´Ì¬×ªÒÆ
-	void change_to_status(StudentManagerStatus to_status);						// ×Ô¶¨ÒåµÄ×´Ì¬×ªÒÆ
+	void change_status();																					// é»˜è®¤çš„çŠ¶æ€è½¬ç§»
+	void change_to_status(const StudentManagerStatus to_status);											// è‡ªå®šä¹‰çŠ¶æ€è½¬ç§»
 
 private:
-	void start_load();															// ¿ªÊ¼¼ÓÔØ
-	void add_id();																// Ìí¼ÓÑ§ºÅ
-	void add_name();															// Ìí¼ÓĞÕÃû
-	void add_gender();															// Ìí¼ÓĞÔ±ğ
-	void add_age();																// Ìí¼ÓÄêÁä
-	void add_native_place();													// Ìí¼Ó¼®¹á
-	void add_phone_number();													// Ìí¼ÓÊÖ»úºÅ
-	std::string enter_as_regex(std::regex i_regex);								// °´ÕıÔòÊäÈëĞÅÏ¢
+	void start_load();																						// å¼€å§‹åŠ è½½
+	void add_id();																							// æ·»åŠ å­¦å·
+	void add_name();																						// æ·»åŠ å§“å
+	void add_gender();																						// æ·»åŠ æ€§åˆ«
+	void add_age();																							// æ·»åŠ å¹´é¾„
+	void add_province();																					// æ·»åŠ çœä»½
+	void add_city();																						// æ·»åŠ åŸå¸‚
+	void add_district();																					// æ·»åŠ åŒº/å¿
+	void add_phone_number();																				// æ·»åŠ æ‰‹æœºå·
+	void print_province();																					// æ‰“å°çœä»½åˆ—è¡¨
+	void print_city(const std::string& province_name);														// æ‰“å°åŸå¸‚åˆ—è¡¨
+	void print_district(const std::string& province_name, const std::string& city_name);					// æ‰“å°åŒº/å¿åˆ—è¡¨
+	std::string enter_as_regex(std::regex i_regex);															// æŒ‰æ­£åˆ™è¾“å…¥ä¿¡æ¯
 
-	FileManager file_manager;													// ÎÄ¼ş¹ÜÀíÆ÷
-	std::vector<Student> all_student;											// ´æ·ÅËùÓĞµÄStudnet
-	int index = 0;																// Ö¸Ïò²Ù×÷µÄStudent
-	StudentManagerStatus status = kSNone;										// µ±Ç°²Ù×÷×´Ì¬
+	FileManager file_manager;																				// æ–‡ä»¶ç®¡ç†å™¨
+	std::vector<Student> all_student;																		// å­˜æ”¾æ‰€æœ‰çš„Student
+	int index = 0;																							// æŒ‡å‘æ“ä½œçš„Studnet
+	StudentManagerStatus status = kSNone;																	// å½“å‰æ“ä½œçŠ¶æ€
+	std::string current_province;																			// å½“å‰é€‰æ‹©çš„çœä»½
+	std::string current_city;																				// å½“å‰é€‰æ‹©çš„åŸå¸‚
+	int currect_number = 0;																					// å½“å‰åˆ—è¡¨æ˜¾ç¤ºæ•°é‡
+	int prince_field_width = 20;																			// çœä»½åˆ—å®½
+	int city_field_width = 20;																				// åŸå¸‚åˆ—å®½
+	int district_field_width = 20;																			// åŒº/å¿åˆ—å®½
+	int max_province_show_number = 5;																		// æ¯è¡Œæ˜¾ç¤ºçš„çœä»½æ•°é‡
+	int max_city_show_number = 5;																			// æ¯è¡Œæ˜¾ç¤ºçš„åŸå¸‚æ•°é‡
+	int max_district_show_number = 5;																		// æ¯è¡Œæ˜¾ç¤ºçš„åŒº/å¿æ•°é‡
 };
