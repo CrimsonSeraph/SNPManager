@@ -105,6 +105,7 @@ void StudentManager::add_name() {
 	std::cout << "当前输入 姓名：2-5个中文字符，支持复姓\n";
 	std::string i_name = enter_as_regex(AllRegex::get_name_regex());
 	std::cout << CLEAR_CUR_AND_PREV_LINE;
+	// 边界检查：如果索引越界，则不进行赋值
 	if (all_student.size() <= index) {
 		return;
 	}
@@ -112,40 +113,25 @@ void StudentManager::add_name() {
 }
 
 void StudentManager::add_gender() {
-	std::cout << "当前输入 性别：0->女 | 1->男，单选输入\n";
-	while (true) {
-		int input;
-		// 期望用户输入整数 0 或 1
-		if (std::cin >> input) {
-			if (input == 0 || input == 1) {
-				// 再次进行越界检查，确保有当前学生记录
-				if (all_student.size() <= index) {
-					return;
-				}
-				// 0 -> false, 1 -> true
-				all_student[index].gender = static_cast<bool>(input);
-				break;
-			}
-			else {
-				// 输入非 0/1 时，清除行并继续等待
-				std::cout << CLEAR_CUR_AND_PREV_LINE;
-				continue;
-			}
-		}
-		else {
-			// 非整数输入时，清除错误状态并忽略本行，继续读取
-			std::cout << CLEAR_CUR_AND_PREV_LINE;
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			continue;
-		}
+	std::cout << "当前输入 性别：1/0 或 男/女，单选输入\n";
+	std::string i_gender = enter_as_regex(AllRegex::get_gender_regex());
+	std::cout << CLEAR_CUR_AND_PREV_LINE;
+	// 边界检查：如果索引越界，则不进行赋值
+	if (all_student.size() <= index) {
+		return;
 	}
+	bool true_gender = true;
+	if (i_gender == "女" || i_gender == "0") {
+		true_gender = false;
+	}
+	all_student[index].name = true_gender;
 }
 
 void StudentManager::add_age() {
 	std::cout << "当前输入 年龄：16-30岁整数，需要符合大学生年龄范围\n";
 	std::string i_age = enter_as_regex(AllRegex::get_age_regex());
 	std::cout << CLEAR_CUR_AND_PREV_LINE;
+	// 边界检查：如果索引越界，则不进行赋值
 	if (all_student.size() <= index) {
 		return;
 	}
@@ -171,6 +157,7 @@ void StudentManager::add_district() {
 void StudentManager::add_phone_number() {
 	std::cout << "当前输入 联系方式：11位手机号\n";
 	std::string i_phone_number = enter_as_regex(AllRegex::get_phone_number_regex());
+	// 边界检查：如果索引越界，则不进行赋值
 	std::cout << CLEAR_CUR_AND_PREV_LINE;
 	if (all_student.size() <= index) {
 		return;

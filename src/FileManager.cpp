@@ -5,7 +5,10 @@ FileManager::FileManager() {
 }
 
 FileManager::~FileManager() {
-	std::filesystem::remove(file_path + file_name);
+	save_file();
+	if (is_file_exist(file_name)) {
+		std::filesystem::remove(file_path + file_name + file_extension);
+	}
 }
 
 void FileManager::change_to_status(const FileManagerStatus to_status) {
@@ -57,12 +60,13 @@ bool FileManager::serch_file() {
 	// 清空现有列表
 	file_list.clear();
 	// 如果存在临时文件则加入列表
-	if (is_file_exist(file_path + file_name)) {
+	if (is_file_exist(file_name)) {
 		file_list.push_back({ 0, file_name });
 	}
 	// 遍历目录，匹配符合命名规则的文件并解析索引
 	for (const auto& o_file_name : std::filesystem::directory_iterator(file_path)) {
 		if (std::regex_match(o_file_name.path().filename().string(), AllRegex::get_file_name_regex())) {
+			// 文件名（含扩展名）
 			std::string file_name = o_file_name.path().filename().string();
 			// 解析下划线后到点之前的索引部分
 			size_t start = file_name.find("_") + 1;
@@ -75,7 +79,7 @@ bool FileManager::serch_file() {
 			// 构造 FileInfo 并加入列表
 			FileInfo index_name;
 			index_name.index = index;
-			index_name.name = o_file_name.path().filename().string();
+			index_name.name = o_file_name.path().stem().string();											// 使用 path::stem() 去除尾缀
 			file_list.push_back(index_name);
 		}
 	}
@@ -111,7 +115,7 @@ bool FileManager::serch_file() {
 
 bool FileManager::is_file_exist(const std::string& file) {
 	// 检查给定路径是否存在文件或目录
-	if (!std::filesystem::exists(file)) {
+	if (!std::filesystem::exists(file_path + file + file_extension)) {
 		return false;
 	}
 	return true;
@@ -124,19 +128,19 @@ bool FileManager::open_file(const std::string& name) {
 		return true;
 	}
 	// 目标文件必须存在
-	if (!is_file_exist(file_path + name)) {
+	if (!is_file_exist(name)) {
 		return false;
 	}
 	// 如果已有临时文件存在，先删除它
-	if (is_file_exist(file_path + file_name)) {
-		delete_file(file_path + file_name);
-		if (is_file_exist(file_path + file_name)) {
+	if (is_file_exist(file_name)) {
+		delete_file(file_name);
+		if (is_file_exist(file_name)) {
 			// 删除失败则返回 false
 			return false;
 		}
 	}
 	// 将目标文件复制为临时文件
-	if (!std::filesystem::copy_file(file_path + name, file_path + file_name)) {
+	if (!std::filesystem::copy_file(file_path + name + file_extension, file_path + file_name + file_extension)) {
 		return false;
 	}
 	return true;
@@ -144,8 +148,8 @@ bool FileManager::open_file(const std::string& name) {
 
 bool FileManager::delete_file(const std::string& name) {
 	// 删除指定文件（带路径），存在则删除并返回 true，否则返回 false
-	if (std::filesystem::exists(file_path + name)) {
-		std::filesystem::remove(file_path + name);
+	if (std::filesystem::exists(file_path + name + file_extension)) {
+		std::filesystem::remove(file_path + name + file_extension);
 		return true;
 	}
 	return false;
@@ -153,12 +157,12 @@ bool FileManager::delete_file(const std::string& name) {
 
 bool FileManager::create_temp_file() {
 	// 创建临时文件：存在则直接返回；否则尝试创建文件并确保目录存在
-	if (is_file_exist(file_path + file_name)) {
+	if (is_file_exist(file_path + file_name + file_extension)) {
 		return true;
 	}
 	std::ofstream o_file;
 	// 尝试在目标路径创建文件
-	o_file.open(file_path + file_name);
+	o_file.open(file_path + file_name + file_extension);
 	if (!o_file.is_open()) {
 		// 如果打开失败，可能是目录不存在，先尝试创建目录
 		if (!(std::filesystem::exists(file_path) && std::filesystem::is_directory(file_path))) {
@@ -168,17 +172,17 @@ bool FileManager::create_temp_file() {
 			}
 		}
 		// 再次尝试打开文件
-		o_file.open(file_path + file_name);
+		o_file.open(file_path + file_name + file_extension);
 	}
 	// 关闭文件句柄
 	o_file.close();
 	// 返回文件是否存在的检查结果
-	return is_file_exist(file_path + file_name);
+	return is_file_exist(file_path + file_name + file_extension);
 }
 
 bool FileManager::save_file() {
 	// 保存当前临时文件为一个新备份文件：临时文件必须存在，目标备份名不能已存在，然后复制
-	if (!is_file_exist(file_path + file_name)) {
+	if (!is_file_exist(file_name)) {
 		return false;
 	}
 	// 目标名称如果已存在则视为冲突失败
@@ -186,7 +190,7 @@ bool FileManager::save_file() {
 		return false;
 	}
 	// 执行复制操作
-	if (!std::filesystem::copy_file(file_path + file_name, get_current_file_name())) {
+	if (!std::filesystem::copy_file(file_path + file_name + file_extension, file_path + get_current_file_name() + file_extension)) {
 		return false;
 	}
 	return true;
@@ -195,7 +199,7 @@ bool FileManager::save_file() {
 int FileManager::choose_file() {
 	// 选择文件：如果只有一个文件并且当前有临时文件则返回 0；否则展示文件列表并从控制台读取选择序号
 	if (file_list.size() == 1) {
-		if (is_file_exist(file_path + file_name)) {
+		if (is_file_exist(file_name)) {
 			// 只有一个文件且临时文件存在，直接返回索引 0
 			return 0;
 		}
@@ -239,26 +243,27 @@ void FileManager::reflash_file_name() {
 	for (auto& file_info : file_list) {
 		std::string current_file_name;
 		if (file_info.index == 0) {
-			current_file_name = "Student_temp.txt";
+			// 临时文件跳过重命名
+			continue;
 		}
 		else {
-			current_file_name = "Student_" + std::to_string(file_info.index);
+			current_file_name = "Students_" + std::to_string(file_info.index);
 		}
 		// 执行重命名操作，末尾添加perch占位避免覆盖
-		std::filesystem::rename(file_path + file_info.name, file_path + current_file_name + "perch");
+		std::filesystem::rename(file_path + file_info.name + file_extension, file_path + current_file_name + "perch" + file_extension);
 		// 记录新名称
 		file_info.name = current_file_name;
 	}
-	for(const auto& file_info : file_list) {
+	for (const auto& file_info : file_list) {
 		if (file_info.index == 0) {
 			// 临时文件跳过重命名
 			continue;
 		}
 		// 去除占位完成最终重命名
-		std::filesystem::rename(file_path + file_info.name + "perch", file_path + file_info.name + ".txt");
+		std::filesystem::rename(file_path + file_info.name + "perch" + file_extension, file_path + file_info.name + file_extension);
 	}
 	// 更新 current_file_index
-	if (is_file_exist(file_path + file_name)) {
+	if (is_file_exist(file_name)) {
 		current_file_index = static_cast<int>(file_list.size());
 	}
 	else {
@@ -268,7 +273,7 @@ void FileManager::reflash_file_name() {
 
 std::string FileManager::get_current_file_name() {
 	// 返回当前要保存的备份文件名（基于 current_file_index）
-	std::string current_file_name = "Student_" + std::to_string(current_file_index)+".txt";
+	std::string current_file_name = "Students_" + std::to_string(current_file_index);
 	return current_file_name;
 }
 
@@ -289,13 +294,13 @@ std::vector<Student> FileManager::get_student_data() {
 		.phone_number = "00000000000",
 	};
 	// 如果临时文件不存在，直接返回默认数据
-	if (!is_file_exist(file_path + file_name)) {
+	if (!is_file_exist(file_name)) {
 		all_student.push_back(student_data);
 		return all_student;
 	}
 	// 打开临时文件以读取
 	std::ifstream i_file;
-	i_file.open(file_path + file_name);
+	i_file.open(file_path + file_name + file_extension);
 	if (!i_file.is_open()) {
 		// 打开失败则返回默认值
 		all_student.push_back(student_data);

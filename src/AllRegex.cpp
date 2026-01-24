@@ -23,7 +23,7 @@ const std::regex& AllRegex::get_name_regex() {
 
 const std::regex& AllRegex::get_gender_regex() {
 	// 性别正则表达式：女 | 男
-	static std::regex gender_regex = std::regex(R"((女|男))");
+	static std::regex gender_regex = std::regex(R"((女|男|1|0))");
 	return gender_regex;
 }
 
@@ -41,6 +41,6 @@ const std::regex& AllRegex::get_phone_number_regex() {
 
 const std::regex& AllRegex::get_file_name_regex() {
 	// 目标文件名正则表达式(实例：students_1.txt)
-	static std::regex file_name_regex = std::regex(R"(students_[0-9]{1,}\.txt)");
+	static std::regex file_name_regex = std::regex(R"(Students_[0-9]{1,}\.txt)");
 	return file_name_regex;
 }

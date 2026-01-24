@@ -48,8 +48,9 @@ private:
 
 	std::vector<FileInfo> file_list;																		// 存放搜索到的目标文件序号和名称
 	std::vector<Student> all_student;																		// 存放从文件中获取的一行Student
-	std::string file_path = "../resrc";																		// 当前操作的文件路径
-	std::string file_name = "Studnet_temp.txt";																// 临时文件名
+	std::string file_path = "../resrc/";																	// 当前操作的文件路径
+	std::string file_name = "Studnets_temp";																	// 临时文件名
+	std::string file_extension = ".txt";																	// 保存的文件尾缀
 	int max_file_backup = 5;																				// 最大备份文件数量
 	int current_file_index = 0;																				// 临时文件序号，默认从0开始
 	int max_show_number = 3;																				// 每行显示的文件数量
