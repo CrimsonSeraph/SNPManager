@@ -8,7 +8,7 @@ StudentManager::~StudentManager() {
 }
 
 void StudentManager::change_status() {
-	switch (status) {
+	switch (s_status) {
 	case StudentManagerStatus::kSAddId:
 		change_to_status(kSAddName);
 		break;
@@ -19,9 +19,9 @@ void StudentManager::change_status() {
 		change_to_status(kSAddAge);
 		break;
 	case StudentManagerStatus::kSAddAge:
-		change_to_status(kSAddPrince);
+		change_to_status(kSAddProvince);
 		break;
-	case StudentManagerStatus::kSAddPrince:
+	case StudentManagerStatus::kSAddProvince:
 		change_to_status(kSAddCity);
 		break;
 	case StudentManagerStatus::kSAddCity:
@@ -31,6 +31,9 @@ void StudentManager::change_status() {
 		change_to_status(kSAddPhoneNumber);
 		break;
 	case StudentManagerStatus::kSAddPhoneNumber:
+		change_to_status(kSNone);
+		break;
+	case StudentManagerStatus::kSGetStudentData:
 		change_to_status(kSNone);
 		break;
 	case StudentManagerStatus::kSStartLoad:
@@ -43,8 +46,8 @@ void StudentManager::change_status() {
 }
 
 void StudentManager::change_to_status(const StudentManagerStatus to_status) {
-	status = to_status;
-	switch (to_status) {
+	s_status = to_status;
+	switch (s_status) {
 	case StudentManagerStatus::kSAddId:
 		add_id();
 		change_status();
@@ -61,17 +64,24 @@ void StudentManager::change_to_status(const StudentManagerStatus to_status) {
 		add_age();
 		change_status();
 		break;
-	case StudentManagerStatus::kSAddPrince:
+	case StudentManagerStatus::kSAddProvince:
+		add_province();
 		change_status();
 		break;
 	case StudentManagerStatus::kSAddCity:
+		add_city();
 		change_status();
 		break;
 	case StudentManagerStatus::kSAddDistrict:
+		add_district();
 		change_status();
 		break;
 	case StudentManagerStatus::kSAddPhoneNumber:
 		add_phone_number();
+		change_status();
+		break;
+	case StudentManagerStatus::kSGetStudentData:
+		all_student = file_manager.get_student_data();
 		change_status();
 		break;
 	case StudentManagerStatus::kSStartLoad:
@@ -86,6 +96,7 @@ void StudentManager::change_to_status(const StudentManagerStatus to_status) {
 
 void StudentManager::start_load() {
 	file_manager.change_to_status(FileManagerStatus::kFStartLoad);
+	file_manager.change_to_status(FileManagerStatus::kFLoadStudentData);
 	change_to_status(kSAddId);
 }
 
@@ -142,16 +153,41 @@ void StudentManager::add_age() {
 void StudentManager::add_province() {
 	currect_number = 0;
 	print_province();
+	std::cout << "请选择省份，输入省份前的序号：";
+	current_province = choose_from_vector(AreaData::get_province_names());
+	std::cout << CLEAR_CUR_AND_PREV_LINE;
+	all_student[index].native_place.province = current_province;
+
 }
 
 void StudentManager::add_city() {
+	if (current_province.empty()) {
+		change_to_status(StudentManagerStatus::kSAddProvince);
+		return;
+	}
 	currect_number = 0;
 	print_city(current_province);
+	std::cout << "请选择城市，输入城市前面的序号：";
+	current_city = choose_from_vector(AreaData::get_cities_names_by_province(current_province));
+	std::cout << CLEAR_CUR_AND_PREV_LINE;
+	all_student[index].native_place.city = current_city;
 }
 
 void StudentManager::add_district() {
+	if (current_province.empty()) {
+		change_to_status(StudentManagerStatus::kSAddProvince);
+		return;
+	}
+	if (current_city.empty()) {
+		change_to_status(StudentManagerStatus::kSAddCity);
+		return;
+	}
 	currect_number = 0;
 	print_district(current_province, current_city);
+	std::cout << "请选择区/县，输入区/县前面的序号：";
+	std::string current_district = choose_from_vector(AreaData::get_districts_names_by_province_city(current_province, current_city));
+	std::cout << CLEAR_CUR_AND_PREV_LINE;
+	all_student[index].native_place.city = current_district;
 }
 
 void StudentManager::add_phone_number() {
@@ -193,10 +229,10 @@ void StudentManager::print_province() {
 void StudentManager::print_city(const std::string& province_name) {
 	int count = 0;
 	int city_index = 0;
-	for (const City& city : AreaData::get_cities_by_province(province_name)) {
+	for (const std::string city_name : AreaData::get_cities_names_by_province(province_name)) {
 		city_index++;
-		std::string show_district = std::to_string(city_index) + ":" + city.name;
-		std::cout << std::setw(city_field_width) << std::left << show_district;
+		std::string show_city = std::to_string(city_index) + ":" + city_name;
+		std::cout << std::setw(city_field_width) << std::left << show_city;
 		count++;
 		if (count >= max_city_show_number) {
 			std::cout << "\n";
@@ -212,7 +248,7 @@ void StudentManager::print_city(const std::string& province_name) {
 void StudentManager::print_district(const std::string& province_name, const std::string& city_name) {
 	int count = 0;
 	int district_index = 0;
-	for (const std::string district_name : AreaData::get_districts_by_province_city(province_name, city_name)) {
+	for (const std::string district_name : AreaData::get_districts_names_by_province_city(province_name, city_name)) {
 		district_index++;
 		std::string show_district = std::to_string(district_index) + ":" + district_name;
 		std::cout << std::setw(district_field_width) << std::left << show_district;
@@ -226,6 +262,24 @@ void StudentManager::print_district(const std::string& province_name, const std:
 		std::cout << "\n";
 	}
 	currect_number = district_index;
+}
+
+void StudentManager::reload_index() {
+}
+
+std::string StudentManager::choose_from_vector(const std::vector<std::string>& all_string) {
+	int choose_index = 0;
+	while (true) {
+		std::cin >> choose_index;
+		if (std::cin.fail()) {
+			std::cin.clear();
+			while (std::cin.get() != '\n' || std::cin.get() != EOF) {
+				std::cin.ignore();
+			}
+		}
+		break;
+	}
+	return all_string[choose_index];
 }
 
 // 封装的正则输入读取函数：不断读取直到输入匹配给定正则

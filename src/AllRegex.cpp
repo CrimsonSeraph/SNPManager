@@ -33,6 +33,12 @@ const std::regex& AllRegex::get_age_regex() {
 	return age_regex;
 }
 
+const std::regex& AllRegex::get_native_place_regex() {
+	// 文件存储的籍贯格式对应的正则表达式：XX，XX，XX（由于存在非省、市等常规结尾名称，通过，识别）
+	static std::regex native_place_regex = std::regex(R"(([\xE0-\xEF][\x80-\xBF][\x80-\xBF]){3,7}),([\xE0-\xEF][\x80-\xBF][\x80-\xBF]){3,7}),([\xE0-\xEF][\x80-\xBF][\x80-\xBF]){2,8}))");
+	return native_place_regex;
+}
+
 const std::regex& AllRegex::get_phone_number_regex() {
 	// 联系方式正则表达式：11位手机号
 	static std::regex phone_number_regex = std::regex(R"(([0-9]{11}))");

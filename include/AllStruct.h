@@ -34,6 +34,6 @@ struct Student {
 
 // 文件信息体
 struct FileInfo {
-	int index;																								// 文件序号
+	int index = 0;																								// 文件序号
 	std::string name;																						// 文件名称
 };

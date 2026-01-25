@@ -13,9 +13,9 @@ public:
 	// 获取省份列表
 	static const std::vector<std::string> get_province_names();
 	// 根据省名称获取市列表
-	static const std::vector<City>& get_cities_by_province(const std::string& province_name);
+	static const std::vector<std::string> get_cities_names_by_province(const std::string& province_name);
 	// 根据省名称和市名称获取区/县列表
-	static const std::vector<std::string>& get_districts_by_province_city(const std::string& province_name, const std::string& city_name);
+	static const std::vector<std::string>& get_districts_names_by_province_city(const std::string& province_name, const std::string& city_name);
 	// 获取完整的省市区数据
 	static const std::vector<Province>& get_area_data();
 };

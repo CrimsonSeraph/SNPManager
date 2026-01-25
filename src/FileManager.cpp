@@ -12,7 +12,8 @@ FileManager::~FileManager() {
 }
 
 void FileManager::change_to_status(const FileManagerStatus to_status) {
-	switch (to_status) {
+	f_status = to_status;
+	switch (f_status) {
 	case FileManagerStatus::kFChooseFile:
 		if (file_list.size() == 0) {
 			break;
@@ -22,10 +23,17 @@ void FileManager::change_to_status(const FileManagerStatus to_status) {
 		change_to_status(kFNone);
 		break;
 	case FileManagerStatus::kFSaveFile:
-		while (!save_file()) {
-		};
+		if (!save_file()) {
+			save_file();
+		}
 		change_to_status(kFNone);
 		break;
+	case FileManagerStatus::kFLoadStudentData:
+		if (!load_student_data()) {
+			load_student_data();
+		}
+		break;
+		change_to_status(kFNone);
 	case FileManagerStatus::kFStartLoad:
 		if (!start_load()) {
 			start_load();
@@ -36,6 +44,13 @@ void FileManager::change_to_status(const FileManagerStatus to_status) {
 	case FileManagerStatus::kFNone:
 		break;
 	}
+}
+
+std::vector<Student> FileManager::get_student_data() {
+	if (all_student.size() == 0) {
+		load_student_data();
+	}
+	return all_student;
 }
 
 bool FileManager::start_load() {
@@ -271,13 +286,7 @@ void FileManager::reflash_file_name() {
 	}
 }
 
-std::string FileManager::get_current_file_name() {
-	// 返回当前要保存的备份文件名（基于 current_file_index）
-	std::string current_file_name = "Students_" + std::to_string(current_file_index);
-	return current_file_name;
-}
-
-std::vector<Student> FileManager::get_student_data() {
+bool FileManager::load_student_data() {
 	// 清空存储的学生数据
 	all_student.clear();
 	// 读取学生数据：初始化一个默认的错误对象，尝试打开临时文件并解析每行的字段
@@ -293,18 +302,18 @@ std::vector<Student> FileManager::get_student_data() {
 		},
 		.phone_number = "00000000000",
 	};
-	// 如果临时文件不存在，直接返回默认数据
+	// 如果临时文件不存在，则返回false
 	if (!is_file_exist(file_name)) {
 		all_student.push_back(student_data);
-		return all_student;
+		return false;
 	}
 	// 打开临时文件以读取
 	std::ifstream i_file;
 	i_file.open(file_path + file_name + file_extension);
 	if (!i_file.is_open()) {
-		// 打开失败则返回默认值
+		// 打开失败则返回false
 		all_student.push_back(student_data);
-		return all_student;
+		return false;
 	}
 	std::string line;
 	std::smatch match;
@@ -314,15 +323,40 @@ std::vector<Student> FileManager::get_student_data() {
 		if (std::regex_search(line, match, AllRegex::get_id_regex())) {
 			all_student.push_back(student_data);
 			student_data.id = match.str(0);
-			std::regex_search(line, match, AllRegex::get_name_regex());
-			student_data.name = match.str(0);
-			std::regex_search(line, match, AllRegex::get_gender_regex());
-
-			std::regex_search(line, match, AllRegex::get_age_regex());
-			student_data.age = std::stoi(match.str(0));
-			std::regex_search(line, match, AllRegex::get_phone_number_regex());
-			student_data.phone_number = match.str(0);
+			if (std::regex_search(line, match, AllRegex::get_name_regex())) {
+				student_data.name = match.str(0);
+			}
+			if (std::regex_search(line, match, AllRegex::get_gender_regex())) {
+				student_data.gender = match.str(0) == "男" ? true : false;
+			}
+			if (std::regex_search(line, match, AllRegex::get_native_place_regex())) {
+				std::string native_place = match.str(0);
+				std::vector<std::string> parts;																// 接收各个部分
+				std::stringstream s_stream(native_place);													// 将完整籍贯作为输入流
+				std::string token;																			// 接收获取片段
+				while (std::getline(s_stream, token, ',')) {
+					if (!token.empty()) parts.push_back(token);												// 将截取片段存储
+				}
+				student_data.native_place.province = parts[0];
+				student_data.native_place.city = parts[1];
+				student_data.native_place.district = parts[2];
+			}
+			if (std::regex_search(line, match, AllRegex::get_age_regex())) {
+				student_data.age = std::stoi(match.str(0));
+			}
+			if (std::regex_search(line, match, AllRegex::get_phone_number_regex())) {
+				student_data.phone_number = match.str(0);
+			}
+		}
+		else {
+			all_student.push_back(student_data);
 		}
 	}
-	return all_student;
+	return true;
+}
+
+std::string FileManager::get_current_file_name() {
+	// 返回当前要保存的备份文件名（基于 current_file_index）
+	std::string current_file_name = "Students_" + std::to_string(current_file_index);
+	return current_file_name;
 }

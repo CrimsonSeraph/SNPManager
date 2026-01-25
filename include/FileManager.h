@@ -19,7 +19,7 @@
 enum FileManagerStatus {
 	kFChooseFile,																							// 选择目标文件
 	kFSaveFile,																								// 保存文件
-	kFGetStudentData,																						// 获取学生数据
+	kFLoadStudentData,																						// 加载学生数据
 	kFStartLoad,																							// 开始加载
 	kFNone,																									// 无操作
 };
@@ -31,6 +31,7 @@ public:
 	~FileManager();
 
 	void change_to_status(FileManagerStatus to_status);														// 自定义状态转移
+	std::vector<Student> get_student_data();																// 获取当前存储的学生数据
 
 private:
 	bool start_load();																						// 开始加载，返回是否成功
@@ -43,15 +44,16 @@ private:
 	int choose_file();																						// 选择目标文件，返回选择的文件序号
 	void show_file_list();																					// 显示文件列表
 	void reflash_file_name();																				// 根据文件列表序号刷新文件名
+	bool load_student_data();																				// 从临时文件中获取学生数据
 	std::string get_current_file_name();																	// 获取当前操作的文件名
-	std::vector<Student> get_student_data();																// 从临时文件中获取学生数据
 
+	FileManagerStatus f_status = kFNone;																	// 文件管理类状态
 	std::vector<FileInfo> file_list;																		// 存放搜索到的目标文件序号和名称
 	std::vector<Student> all_student;																		// 存放从文件中获取的一行Student
 	std::string file_path = "../resrc/";																	// 当前操作的文件路径
-	std::string file_name = "Studnets_temp";																	// 临时文件名
+	std::string file_name = "Studnets_temp";																// 临时文件名
 	std::string file_extension = ".txt";																	// 保存的文件尾缀
 	int max_file_backup = 5;																				// 最大备份文件数量
-	int current_file_index = 0;																				// 临时文件序号，默认从0开始
+	int current_file_index = 0;																				// 临时文件序号
 	int max_show_number = 3;																				// 每行显示的文件数量
 };

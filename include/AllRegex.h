@@ -15,6 +15,7 @@ public:
 	static const std::regex& get_name_regex();																// 获取姓名的正则表达式
 	static const std::regex& get_gender_regex();															// 获取性别的正则表达式
 	static const std::regex& get_age_regex();																// 获取年龄的正则表达式
+	static const std::regex& get_native_place_regex();														// 获取用于读取籍贯的正则表达式
 	static const std::regex& get_phone_number_regex();														// 获取电话号码的正则表达式
 	static const std::regex& get_file_name_regex();															// 获取文件名的正则表达式
 };

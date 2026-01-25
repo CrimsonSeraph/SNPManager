@@ -12,32 +12,38 @@ const std::vector<std::string> AreaData::get_province_names() {
 	return province_names;
 }
 
-const std::vector<City>& AreaData::get_cities_by_province(const std::string& province_name) {
-	std::vector<Province> all_area = get_area_data();
-	for (const auto& province : all_area) {
+const std::vector<std::string> AreaData::get_cities_names_by_province(const std::string& province_name) {
+	std::vector<std::string> cities_names;
+	// 默认存储“错误”
+	cities_names.push_back("错误");
+	for (const auto& province : get_area_data()) {
 		if (province.name == province_name) {
-			return province.cities;
+			std::vector<City> cities = province.cities;
+			for (City city : cities) {
+				cities_names.push_back(city.name);
+			}
+			return cities_names;
 		}
 	}
-	// 未找到匹配的省，返回空向量
-	static std::vector<City> empty_vector;
-	return empty_vector;
+	return cities_names;
 }
 
-const std::vector<std::string>& AreaData::get_districts_by_province_city(const std::string& province_name, const std::string& city_name) {
-	std::vector<Province> all_area = get_area_data();
-	for (const auto& province : all_area) {
+const std::vector<std::string>& AreaData::get_districts_names_by_province_city(const std::string& province_name, const std::string& city_name) {
+	std::vector<std::string> districts_names;
+	// 默认存储“错误”
+	districts_names.push_back("错误");
+	for (const auto& province : get_area_data()) {
 		if (province.name == province_name) {
-			for (const auto& city : province.cities) {
+			std::vector<City> cities = province.cities;
+			for (City city : cities) {
 				if (city.name == city_name) {
-					return city.districts;
+					districts_names = city.districts;
+					return districts_names;
 				}
 			}
 		}
 	}
-	// 未找到匹配的省或市，返回空向量
-	static std::vector<std::string> empty_vector;
-	return empty_vector;
+	return districts_names;
 }
 
 const std::vector<Province>& AreaData::get_area_data() {
